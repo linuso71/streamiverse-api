@@ -39,13 +39,20 @@ export function VideoPlayerControls({ videoUrl, onError }: VideoPlayerControlsPr
     const handleLoadedMetadata = () => setDuration(video.duration);
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleError = () => onError?.();
+    const handleError = (e: Event) => {
+      console.error("Video playback error:", e);
+      console.error("Video URL:", videoUrl);
+      onError?.();
+    };
 
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
     video.addEventListener("play", handlePlay);
     video.addEventListener("pause", handlePause);
     video.addEventListener("error", handleError);
+
+    // Log when video source is set
+    console.log("Video player initialized with URL:", videoUrl);
 
     return () => {
       video.removeEventListener("timeupdate", handleTimeUpdate);
@@ -54,7 +61,7 @@ export function VideoPlayerControls({ videoUrl, onError }: VideoPlayerControlsPr
       video.removeEventListener("pause", handlePause);
       video.removeEventListener("error", handleError);
     };
-  }, [onError]);
+  }, [onError, videoUrl]);
 
   const togglePlay = () => {
     const video = videoRef.current;

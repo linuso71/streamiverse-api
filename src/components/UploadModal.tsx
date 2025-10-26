@@ -48,12 +48,23 @@ export function UploadModal({ open, onOpenChange, onUploadSuccess }: UploadModal
       formData.append("title", title);
       formData.append("video_file", file);
 
+      console.log("Uploading to:", API_ENDPOINTS.videos);
+      
       const response = await fetch(API_ENDPOINTS.videos, {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Upload failed");
+      console.log("Upload response:", response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Upload error:", errorText);
+        throw new Error("Upload failed");
+      }
+
+      const result = await response.json();
+      console.log("Upload success:", result);
 
       toast({
         title: "Upload Successful!",
@@ -65,9 +76,10 @@ export function UploadModal({ open, onOpenChange, onUploadSuccess }: UploadModal
       onOpenChange(false);
       onUploadSuccess();
     } catch (error) {
+      console.error("Upload error:", error);
       toast({
         title: "Upload Failed",
-        description: "There was an error uploading your video",
+        description: error instanceof Error ? error.message : "Connection error. Check CORS settings.",
         variant: "destructive",
       });
     } finally {

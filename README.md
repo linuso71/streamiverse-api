@@ -71,3 +71,51 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Backend Configuration for StreamHub
+
+### Important: CORS Setup Required
+
+Your Django backend **must** be configured to allow requests from this frontend domain.
+
+**In your Django `settings.py`:**
+
+```python
+# Install if not already: pip install django-cors-headers
+
+INSTALLED_APPS = [
+    # ...
+    'corsheaders',
+    # ...
+]
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Add near the top
+    # ... other middleware
+]
+
+# Add your frontend domains:
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:8080",
+    "https://4de8fc8b-ac47-4765-a23e-527de4abc937.lovableproject.com",  # Your Lovable preview
+]
+
+# For development ONLY (not recommended for production):
+# CORS_ALLOW_ALL_ORIGINS = True
+```
+
+### API Configuration
+
+Backend URL is set in `src/lib/api-config.ts`. To change it:
+
+1. Create `.env` file in project root
+2. Add: `VITE_API_URL=http://your-backend-url/api`
+
+### Troubleshooting
+
+**Videos not loading / Upload failing:**
+- ✅ Check Django backend is running
+- ✅ Verify CORS configuration includes your frontend domain
+- ✅ Check browser console (F12) for specific errors
+- ✅ Ensure backend accepts multipart/form-data for uploads

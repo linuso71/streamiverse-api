@@ -27,11 +27,15 @@ const Index = () => {
       const data = await response.json();
       setVideos(data);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load videos",
-        variant: "destructive",
-      });
+      console.error("Failed to fetch videos:", error);
+      // Only show error toast on initial load
+      if (loading) {
+        toast({
+          title: "Connection Error",
+          description: "Cannot connect to backend. Check CORS settings.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -40,13 +44,15 @@ const Index = () => {
   useEffect(() => {
     fetchVideos();
     
-    // Poll for status updates every 5 seconds
+    // Only poll if there are videos being processed
     const interval = setInterval(() => {
-      fetchVideos();
-    }, 5000);
+      if (videos.some(v => v.status === "PENDING" || v.status === "PROCESSING")) {
+        fetchVideos();
+      }
+    }, 10000); // Poll every 10 seconds instead of 5
 
     return () => clearInterval(interval);
-  }, []);
+  }, [videos]);
 
   return (
     <div className="min-h-screen bg-background">
