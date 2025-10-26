@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 interface UploadModalProps {
   open: boolean;
@@ -47,7 +48,7 @@ export function UploadModal({ open, onOpenChange, onUploadSuccess }: UploadModal
       formData.append("title", title);
       formData.append("video_file", file);
 
-      const response = await fetch("http://127.0.0.1:8000/api/videos/", {
+      const response = await fetch(API_ENDPOINTS.videos, {
         method: "POST",
         body: formData,
       });

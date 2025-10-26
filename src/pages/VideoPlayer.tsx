@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_ENDPOINTS } from "@/lib/api-config";
+import { VideoPlayerControls } from "@/components/VideoPlayerControls";
 
 interface Video {
   id: number;
@@ -23,7 +25,7 @@ export default function VideoPlayer() {
   useEffect(() => {
     const fetchVideo = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/videos/${id}/`);
+        const response = await fetch(API_ENDPOINTS.videoDetail(id || ""));
         if (!response.ok) throw new Error("Failed to fetch video");
         const data = await response.json();
         setVideo(data);
@@ -69,12 +71,16 @@ export default function VideoPlayer() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <Card className="overflow-hidden bg-card border-border">
-              <video
-                src={video.video_file}
-                controls
-                className="w-full aspect-video bg-black"
-                autoPlay
+            <Card className="overflow-hidden bg-card border-border p-2">
+              <VideoPlayerControls 
+                videoUrl={video.video_file} 
+                onError={() => {
+                  toast({
+                    title: "Playback Error",
+                    description: "Failed to load video stream",
+                    variant: "destructive",
+                  });
+                }}
               />
             </Card>
 

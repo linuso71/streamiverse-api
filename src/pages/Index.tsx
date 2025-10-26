@@ -4,6 +4,7 @@ import { VideoCard } from "@/components/VideoCard";
 import { UploadModal } from "@/components/UploadModal";
 import { Upload, Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 interface Video {
   id: number;
@@ -21,7 +22,7 @@ const Index = () => {
 
   const fetchVideos = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/videos/");
+      const response = await fetch(API_ENDPOINTS.videos);
       if (!response.ok) throw new Error("Failed to fetch videos");
       const data = await response.json();
       setVideos(data);
